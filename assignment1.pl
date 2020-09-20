@@ -46,8 +46,10 @@ write('Are you willing to relocate in remote areas flexibly?'), nl,(read(R), nl,
 write('Have you done more than 12 HSS credits?'), nl,(read(H), nl, (H=y -> Y3 is Y2+1 ; Y3 is Y2)), 
 write('Are you ready to live without family?'), nl,(read(W), nl, (W=y -> X3 is X2+1 ; X3 is X2)), 
 ((X3 > Y3, write('---------------------------------------- \n 
-The suggested career for you is Indian Armed Forces\n----------------------------------------'), nl, assertz(recommended('IAF'))) ; (X3 < Y3, write('---------------------------------------- \n 
-The suggested career for you is Civil Services\n----------------------------------------'),nl, assertz(recommended('Civil Services'))); (X3 = Y3 , X3 =\= 0, write('---------------------------------------- \n 
+The suggested career for you is Indian Armed Forces\n----------------------------------------'), nl, assertz(recommended('IAF'))) 
+; (X3 < Y3, write('---------------------------------------- \n 
+The suggested career for you is Civil Services\n----------------------------------------'),nl, 
+assertz(recommended('Civil Services'))); (X3 = Y3 , X3 =\= 0, write('---------------------------------------- \n 
 The suggested careers for you are Indian Armed Forces and Civil Services\n----------------------------------------'),nl, assertz(recommended('IAF')),
 assertz(recommended('Civil Services')))).
 
@@ -56,11 +58,22 @@ write('Do you have a good score in GATE?'), nl,read(G), nl, G=y, write('--------
 The suggested career for you is Pubilc Services Undertaking\n----------------------------------------'),nl, assertz(recommended('Pubilc Services Undertaking')),
 suggest_career); suggest_career.
 
+/*---------------------- ARTS --------------------*/
+
+career(arts) :- (write('Are you willing to take risk?'), nl,read(R), nl, R=y , 
+write('Do you have proficiency in Photography/Dance/Music/Writing?'), nl,read(H), nl, H=y ,
+(write('Have you taken part in events related to your hobbies during college?'), nl,read(E), nl, E=y ;
+write('Do you participate in competitions like reality shows or on Youtube?'), nl,read(Y), nl, Y=y),
+write('---------------------------------------- \n 
+The suggested career for you is Artist\n----------------------------------------'),nl, assertz(recommended('Artist')),
+suggest_career);suggest_career.
+ 
 /*=================================================== MAIN PROGRAM ================================================================*/
+
 suggest_career :- nl,write('Welcome to the career advisory system ! \n
-Choose a preference from below :- \n 1. Want to study further \n 2. Want to do something on your own?\n 3. Want to serve nation?\n 4. Show final suggestions?'),
+Choose a preference from below :- \n 1. Want to study further \n 2. Want to do something on your own?\n 3. Want to serve nation?\n 4. Have a side passion? \n 5. Show final suggestions?'),
 nl,(read(Y), nl, ((Y =:= 1 -> (category(higher_studies))); (Y =:= 2 -> career(start_up)) ; (Y =:= 3 -> career(government_job))
-; (Y =:= 4 -> final_suggestion) ; write('Please choose the correct option \n'),suggest_career)).
+; (Y =:= 4 -> career(arts)) ; (Y =:= 5 -> final_suggestion) ; write('Please choose the correct option \n'),suggest_career)).
 
 final_suggestion :- nl, convert_to_list(List), remove_duplicates(List, Final_List), length(Final_List, Length), prioritize(Final_List, Final_PList, Length), 
 write('The list of suggested career choices along with their priority suited for you are :- \n'), write(Final_PList).
