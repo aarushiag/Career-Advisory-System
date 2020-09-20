@@ -1,5 +1,17 @@
 /*-----------------------------------------------CAREER ADVISORY SYSTEM------------------------------------------------------------*/
 
+/*---------------------- corporate --------------------*/
+suggestCSE.
+suggestECE.
+suggestCSAM.
+suggestCSD.
+
+
+category(corporate) :- write('Mention your branch in block letters.'), nl, 
+(read(B), nl, (B='CSE'-> suggestCSE ; B='ECE'-> suggestECE ; B='CSAM'->suggestCSAM ; B='CSD' -> suggestCSD ; 
+write('Please mention a valid branch\n'),category(corporate))), suggest_career.
+
+
 /*---------------------------------------------HIGHER STUDIES------------------------------------------------------------*/
 category(higher_studies) :- (write('Do you have an economic background?'), nl, read(E), nl, E=y,
 write('Can you study for long hours?'), nl, read(L), nl, L=y, 
@@ -71,9 +83,9 @@ suggest_career);suggest_career.
 /*=================================================== MAIN PROGRAM ================================================================*/
 
 suggest_career :- nl,write('Welcome to the career advisory system ! \n
-Choose a preference from below :- \n 1. Want to study further \n 2. Want to do something on your own?\n 3. Want to serve nation?\n 4. Have a side passion? \n 5. Show final suggestions?'),
+Choose a preference from below :- \n 1. Want to study further \n 2. Want to do something on your own?\n 3. Want to serve nation?\n 4. Have a side passion?\n 5. Prefer corporate culture?\n 6. Show final suggestions?'),
 nl,(read(Y), nl, ((Y =:= 1 -> (category(higher_studies))); (Y =:= 2 -> career(start_up)) ; (Y =:= 3 -> career(government_job))
-; (Y =:= 4 -> career(arts)) ; (Y =:= 5 -> final_suggestion) ; write('Please choose the correct option \n'),suggest_career)).
+; (Y =:= 4 -> career(arts)) ; (Y =:= 5 -> category(corporate)) ; (Y =:= 6 -> final_suggestion) ; write('Please choose the correct option \n'),suggest_career)).
 
 final_suggestion :- nl, convert_to_list(List), remove_duplicates(List, Final_List), length(Final_List, Length), prioritize(Final_List, Final_PList, Length), 
 write('The list of suggested career choices along with their priority suited for you are :- \n'), write(Final_PList).
