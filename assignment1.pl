@@ -32,10 +32,18 @@ nl,read(P), nl, P=y, write('Did you get a good score in CAT/GMAT?'),
 nl,read(S), nl, S=y,write('---------------------------------------- \n 
 The suggested career for you is mba \n----------------------------------------'),nl, assertz(recommended('mba')), fail. 
 
+/*---------------------- START UP-----------------------------*/
+career(start_up) :- (write('Do you have a new development idea?'), nl,read(D), nl, D=y, write('Do you have money to invest?'), nl,read(M), nl, M=y, 
+write('Are you willing to take monetary risk in life?'), nl,read(R), nl, R=y, write('---------------------------------------- \n 
+The suggested career for you is Entrepreneurship(start-up)\n----------------------------------------'),nl, assertz(recommended('Entrepreneurship(start-up)')),
+suggest_career); suggest_career.
+/*---------------------- GOVERNMENT JOB --------------------*/
+career(government_job) :- suggest_career.
 
 /*=================================================== MAIN PROGRAM ================================================================*/
-suggest_career :- nl,write('Choose a preference from below :- \n 1. Want to study further \n 2. Show final suggestions?'),
-nl,(read(Y), nl, ((Y =:= 1 -> (category(higher_studies))); (Y =:= 2 -> final_suggestion) ; write('Please choose the correct option \n'),suggest_career)).
+suggest_career :- nl,write('Choose a preference from below :- \n 1. Want to study further \n 2. Want to do something on your own?\n 3. Want to serve nation?\n 4. Show final suggestions?'),
+nl,(read(Y), nl, ((Y =:= 1 -> (category(higher_studies))); (Y =:= 2 -> career(start_up)) ; (Y =:= 3 -> career(government_job))
+; (Y =:= 4 -> final_suggestion) ; write('Please choose the correct option \n'),suggest_career)).
 
 final_suggestion :- nl, convert_to_list(List), remove_duplicates(List, Final_List), length(Final_List, Length), prioritize(Final_List, Final_PList, Length), 
 write('The list of suggested career choices along their priority suited for you are :- \n'), write(Final_PList).
