@@ -10,7 +10,7 @@ assert(branch(Branch)), assert(cgpa(CGPA)), initial_review_test, suggest_career.
 
 initial_review_test :- write('\nPlease give the following review test :-'), nl, ask_interest('Ability to communicate'), ask_interest('Presentation skills'),
 ask_interest('Knowledge of core subjects'),ask_interest('Critical Thinking and Problem Solving'), ask_interest('Desire to Learn'), 
-ask_interest('Teamwork'), ask_interest('Attention to details'), ask_interest('Creativity'), ask_interest('Efficient in Time Management').
+ask_interest('Teamwork'), ask_interest('Attention to details'), ask_interest('Creativity'), ask_interest('Leadership'), ask_interest('Efficient in Time Management').
 
 suggest_career :- nl,write('\nWelcome to the career advisory system ! \n
 Choose a preference from below :- \n 1. Want to study further \n 2. Want to do something on your own?\n 3. Want to serve nation?\n 4. Have a side passion?\n 5. Prefer corporate culture?\n 6. Show final suggestions?'),
@@ -141,19 +141,21 @@ suggest_career); suggest_career.
 career(government_job) :- (write('Choose a preference from below :- \n 1. Power matters more than money?\n 2. Want a good work life balance'), nl, read(Y), nl, 
 (Y=1 -> career(navyOrCivil), suggest_career ; Y=2 -> career(psu) ; write('Please choose the correct option \n'),career(government_job)));suggest_career.
 
-career(navyOrCivil):- X = 0, Y = 0, write('Do you have high physically and mentally standards?'), nl,(read(F), nl, (F=y -> X1 is X+1 ; X1 is X)),
-write('Do you have high score in UPSC Exam?'), nl,(read(U), nl, (U=y -> Y1 is Y+1 ; Y1 is Y)), 
-write('Do you have high score in NDA/AFCAT Exam?'), nl,(read(N), nl, (N=y -> X2 is X1+1 ; X2 is X1)), 
-write('Are you willing to relocate in remote areas flexibly?'), nl,(read(R), nl, (R=y -> Y2 is Y1+1 ; Y2 is Y1)), 
-write('Have you done more than 12 HSS credits?'), nl,(read(H), nl, (H=y -> Y3 is Y2+1 ; Y3 is Y2)), 
+career(navyOrCivil):- check_interest_threshold('Ability to communicate',2), check_interest_threshold('Leadership',2),
+X = 0, Y = 0, write('Do you have high physical and mental standards?'), nl,(read(F), nl, (F=y -> X1 is X+1 ; X1 is X)),
+write('Do you wish to help people through law?'), nl,(read(U), nl, (U=y -> Y1 is Y+1 ; Y1 is Y)), 
+write('Do you wish to work for Country\'s Defense'), nl,(read(N), nl, (N=y -> X2 is X1+1 ; X2 is X1)), 
+write('Do you have critical views on Political issues?'), nl,(read(R), nl, (R=y -> Y2 is Y1+1 ; Y2 is Y1)), 
+write('Are you aware of events occuring across the country?'), nl,(read(H), nl, (H=y -> Y3 is Y2+1 ; Y3 is Y2)), 
 write('Are you ready to live without family?'), nl,(read(W), nl, (W=y -> X3 is X2+1 ; X3 is X2)), 
 ((X3 > Y3, explanation(navy), nl, assertz(recommended('IAF'))) 
 ; (X3 < Y3, explanation(civil),nl, 
 assertz(recommended('Civil Services'))); (X3 = Y3 , X3 =\= 0, explanation(navyAndCivil),nl, assertz(recommended('IAF')),
 assertz(recommended('Civil Services')))).
 
-career(psu) :- (write('Are you concerned about job security?'), nl,read(J), nl, J=y, write('Do you need a steady source of income?'), nl,read(I), nl, I=y, 
-write('Do you have a good score in GATE?'), nl,read(G), nl, G=y, explanation(psu),nl, assertz(recommended('Pubilc Services Undertaking')),
+career(psu) :- (check_interest_threshold('Leadership',2), check_interest_threshold('Teamwork',2), check_interest_threshold('Ability to communicate',1),
+write('Are you concerned about job security?'), nl,read(J), nl, J=y, write('Do you need a steady source of income?'), nl,read(I), nl, I=y, 
+write('Do you have the skills to debate in internal politics?'), nl,read(G), nl, G=y, explanation(psu),nl, assertz(recommended('Pubilc Services Undertaking')),
 suggest_career); suggest_career.
 
 /*---------------------------------------------------- ARTS ---------------------------------------------------------------*/
@@ -183,21 +185,31 @@ Explanation - You have good presentation and communication skills and are good a
 ------------------------------------------------------------------------').
 
 explanation(start-up) :- write('------------------------------------------------------------------------
-The suggested career for you is Entrepreneurship(start-up).
+The suggested career for you is Entrepreneurship(start-up).\n
 Explanation - You are a good team player, can think critically and have good management skills.Hence, you can start a new venture. 
 ------------------------------------------------------------------------').
 
-explanation(navy) :- write('---------------------------------------- \n 
-The suggested career for you is Indian Armed Forces\n----------------------------------------').
+explanation(navy) :- write('------------------------------------------------------------------------ 
+The suggested career for you is Indian Armed Forces.\n
+Explanation - You have a Country First attitude and wish to defend our country from all the enemies. Start preparing for exams such as NDA and AFCAT.
+------------------------------------------------------------------------').
 
-explanation(civil) :- write('---------------------------------------- \n 
-The suggested career for you is Civil Services\n----------------------------------------').
+explanation(civil) :- write('------------------------------------------------------------------------ 
+The suggested career for you is Civil Services.\n
+Explanation - You have high general awareness of the ongoing political issues across the country. You wish to change people\'s lives. Start preparing for UPSC exam.
+------------------------------------------------------------------------').
 
-explanation(navyAndCivil) :- write('---------------------------------------- \n 
-The suggested careers for you are Indian Armed Forces and Civil Services\n----------------------------------------').
+explanation(navyAndCivil) :- write('------------------------------------------------------------------------ 
+The suggested careers for you are Indian Armed Forces and Civil Services.\n
+Explanation - You have a Country First attitude and wish to defend our country from all the enemies. Start preparing for exams such as NDA and NFCAT.
+You have high general awareness of the ongoing political issues across the country. You wish to change people\'s lives. Start preparing for UPSC exam.
+------------------------------------------------------------------------ ').
 
-explanation(psu) :- write('---------------------------------------- \n 
-The suggested career for you is Pubilc Services Undertaking\n----------------------------------------').
+explanation(psu) :- write('------------------------------------------------------------------------
+The suggested career for you is Pubilc Services Undertaking
+
+Explanation - You need a good work life balance with job security. You can work in PSUs. Start preparing for GATE exam.
+------------------------------------------------------------------------').
 
 explanation(arts) :- write('---------------------------------------- \n 
 The suggested career for you is Artist\n----------------------------------------').
