@@ -56,23 +56,19 @@ suggestCSAM :- write('Choose a preference from below :- \n
 3. Interested in technologies related to system security.\n'), nl, (read(D), nl, ((D = 1 -> (career(big_data_eng);career(dataScientist);career(data_analyst)));
 (D = 2 -> (career(sde);career(full))); (D = 3 -> career(blockchain)))).
 
-suggestECE.
-
-career(chip_designer).
-career(vlsi).
-career(mobile_communications).
-
 career(data_analyst) :- write('Do you have experience with languages like R or Python Statistical Programming?'), nl, read(S), nl, S=y,
 write('Have you done courses like Finance, Micro/Macro courses, Probability and Statistics, ML etc?'), nl, read(B), nl, B=y, 
 write('Do you have skills like critical thinking and presentation skills?'), nl, read(A), nl, A=y, 
 explanation(data_analyst),nl, assertz(recommended('Data Analyst')),fail.
 
 career(big_data_eng) :- write('Do you have experience with technologies like SQL based databases, ETL Tools, Hadoop etc?'), nl, read(S), nl, S=y,
-write('Have you done courses like DBMS, Big Data Mining, Data Warehousing,?'), nl, read(B), nl, B=y, explanation(big_data_eng),nl, 
-assertz(recommended('Big Data Engineer')),fail.
+ask_grade(dbms), ask_grade(big_data_mining),ask_grade(data_warehousing),
+check_grade_threshold([dbms, big_data_mining, data_warehousing],9), 
+explanation(big_data_eng),assertz(recommended('Big Data Engineer')),fail.
 
 career(dataScientist) :- write('Do you have skils like critical thinking, Risk Analysis and Problem Solving Ability?'), nl, read(S), nl, S=y,
-write('Have you done courses like Probability and Statistics, ML, NLP, AI, CV, IA, Data Science, Deep Learning?'), nl, read(B), nl, B=y, 
+ask_grade(ml), ask_grade(nlp),ask_grade(ai), ask_grade(cv), ask_grade(ia), ask_grade(data_science), ask_grade(deep_learning), 
+check_grade_threshold([ml, nlp, ai, cv, ia, data_science, deep_learning],9),
 explanation(dataScientist),nl, assertz(recommended('Data Scientist')),fail.
 
 career(full) :- write('Do you have experience with languages and frameworks like HTML, CSS, NodeJS, Angular Js, Bootstrap, Django etc.?'), nl, read(S), nl, S=y,
@@ -80,16 +76,22 @@ write('Do you have technical know how of client side components, server side lan
 write('Are you familiar with principles of basic prototype design and UI-UX design?'), nl, read(B), nl, B=y, explanation(full),nl, 
 assertz(recommended('Full Stack Developer')),fail.
 
-career(sde) :- write('Do you have experience with languages like C, C++, Java, Python Ruby, Perl etc?'), nl, read(S), nl, S=y,
-write('Do you have skills like technical creativity and analytical thinking for solving day to day problems?'), nl, read(A), nl, A=y, 
-write('Are aware of different processes involved in development of softwares?'), nl, read(B), nl, B=y, explanation(sde),nl, assertz(recommended('Software Developer')),fail.
+career(sde) :- check_interest_threshold('Knowledge of core subjects',2), write('Do you have experience with languages like C, C++, Java, Python Ruby, Perl etc?'), nl, read(S), nl, S=y,
+write('Do you have skills like technical creativity and analytical thinking for solving day to day problems?'), nl, read(A), nl, A=y,
+write('Are aware of different processes involved in development of softwares?'), nl, read(B), nl, B=y, 
+ask_grade(dsa), ask_grade(ada),
+check_grade_threshold([dsa, ada],8),  
+explanation(sde),nl, assertz(recommended('Software Developer')),fail.
 
 career(blockchain) :- write('Do you have experience with languages like Simplicity, C++, Solidity, Rholang, Javascript etc?'), nl, read(S), nl, S=y,
 write('Are you aware of technologies like Bitcoin?'), nl, read(A), nl, A=y, 
-write('Have you done courses like Probability and Statistics, Discrete Mathematics, Cryptography, Bitcoin etc?'), nl, read(B), nl, B=y, explanation(blockchain)
-,nl, assertz(recommended('Blockchain Developer')),fail.
+ask_grade(probabAndStats), ask_grade(discreteMaths),ask_grade(crypto), ask_grade(bitcoin),
+check_grade_threshold([probabAndStats, discreteMaths, crypto, bitcoin],9), 
+explanation(blockchain),nl, assertz(recommended('Blockchain Developer')),fail.
 
-category(corporate) :- (branch(B),(B = cse -> (suggestCSE) ; B = ece -> (suggestECE) ; B = csam -> (suggestCSAM); 
+category(corporate) :- (check_interest_threshold('Knowledge of core subjects',2), check_interest_threshold('Creativity',1), 
+check_interest_threshold('Teamwork',2), check_interest_threshold('Desire to Learn',2), check_interest_threshold('Ability to communicate',2),
+branch(B),(B = cse -> (suggestCSE) ; B = csam -> (suggestCSAM); 
 (write('Please mention a valid branch\n'),category(corporate))),suggest_career);suggest_career.
 
 
@@ -122,7 +124,8 @@ cgpa(Grade), Grade >= 7, explanation(masters),nl, assertz(recommended('masters')
 
 /*---------------------- MBA ---------------------------------*/
 career(mba,higher_studies) :- write('Are you good in extra curicular activities?'), nl,read(R), nl, R=y, 
-check_interest_threshold('Ability to communicate',3), check_interest_threshold('Presentation skills',2), check_interest_threshold('Critical Thinking and Problem Solving',2),
+check_interest_threshold('Ability to communicate',3), check_interest_threshold('Presentation skills',2), 
+check_interest_threshold('Critical Thinking and Problem Solving',2), check_interest_threshold('Efficient in Time Management',2),
 write('Have you managed events at esya or odessey?'), nl,read(M), nl, M=y, 
 write('Do you prefer being a leader in group projects?'), nl,read(P), nl, P=y, 
 ask_grade(eiitm), ask_grade(escm),ask_grade(hiee), ask_grade(ek), ask_grade(eComm), check_grade_threshold([eiitm, escm, hiee, ek, eComm],9),
@@ -160,7 +163,8 @@ suggest_career); suggest_career.
 
 /*---------------------------------------------------- ARTS ---------------------------------------------------------------*/
 
-career(arts) :- (write('Are you willing to take risk?'), nl,read(R), nl, R=y , 
+career(arts) :- (check_interest_threshold('Creativity', 3),
+write('Are you willing to take risk?'), nl,read(R), nl, R=y , 
 write('Do you have proficiency in Photography/Dance/Music/Writing?'), nl,read(H), nl, H=y ,
 (write('Have you taken part in events related to your hobbies during college?'), nl,read(E), nl, E=y ;
 write('Do you participate in competitions like reality shows or on Youtube?'), nl,read(Y), nl, Y=y),
@@ -172,64 +176,85 @@ suggest_career);suggest_career.
 explanation(masters) :- write('------------------------------------------------------------------------
 The suggested career for you is masters.\n
 Explanation - You are an efficient Team player, critical thinker and have a keen desire to learn. You have also find some novel solutions to problems. Start preparing for TOEFL and GRE exam.
-------------------------------------------------------------------------').
+------------------------------------------------------------------------\n').
 
 explanation(mtech) :- write('------------------------------------------------------------------------
 The suggested career for you is mtech \n
 Explanation - You are proficient in Core subjects. You are an efficient Team player, critical thinker and have a keen desire to learn. You have also find some novel solutions to problems. Start preparing for GATE exam.
-------------------------------------------------------------------------').
+------------------------------------------------------------------------\n').
 
 explanation(mba) :- write('------------------------------------------------------------------------
 The suggested career for you is mba.\n
 Explanation - You have good presentation and communication skills and are good at managing public groups events. You are a critical thinker. Start preparing for CAT exam.
-------------------------------------------------------------------------').
+------------------------------------------------------------------------\n').
 
 explanation(start-up) :- write('------------------------------------------------------------------------
 The suggested career for you is Entrepreneurship(start-up).\n
 Explanation - You are a good team player, can think critically and have good management skills.Hence, you can start a new venture. 
-------------------------------------------------------------------------').
+------------------------------------------------------------------------\n').
 
 explanation(navy) :- write('------------------------------------------------------------------------ 
 The suggested career for you is Indian Armed Forces.\n
 Explanation - You have a Country First attitude and wish to defend our country from all the enemies. Start preparing for exams such as NDA and AFCAT.
-------------------------------------------------------------------------').
+------------------------------------------------------------------------\n').
 
 explanation(civil) :- write('------------------------------------------------------------------------ 
 The suggested career for you is Civil Services.\n
 Explanation - You have high general awareness of the ongoing political issues across the country. You wish to change people\'s lives. Start preparing for UPSC exam.
-------------------------------------------------------------------------').
+------------------------------------------------------------------------\n').
 
 explanation(navyAndCivil) :- write('------------------------------------------------------------------------ 
 The suggested careers for you are Indian Armed Forces and Civil Services.\n
 Explanation - You have a Country First attitude and wish to defend our country from all the enemies. Start preparing for exams such as NDA and NFCAT.
 You have high general awareness of the ongoing political issues across the country. You wish to change people\'s lives. Start preparing for UPSC exam.
------------------------------------------------------------------------- ').
+------------------------------------------------------------------------\n').
 
 explanation(psu) :- write('------------------------------------------------------------------------
 The suggested career for you is Pubilc Services Undertaking
 
 Explanation - You need a good work life balance with job security. You can work in PSUs. Start preparing for GATE exam.
-------------------------------------------------------------------------').
+------------------------------------------------------------------------\n').
 
-explanation(arts) :- write('---------------------------------------- \n 
-The suggested career for you is Artist\n----------------------------------------').
+explanation(arts) :- write('------------------------------------------------------------------------
+The suggested career for you is Artist
 
-explanation(data_analyst) :- write('----------------------------------------------------- 
-The suggested career for you is Data Analyst\n-----------------------------------------------------\n').
+Explanation - You are a creative persion and need to pursue your side passion. You can become a good artist.
+------------------------------------------------------------------------\n').
 
-explanation(big_data_eng) :- write('----------------------------------------------------- \n
-The suggested career for you is Big Data Engineer\n-----------------------------------------------------\n').
+explanation(data_analyst) :- write('------------------------------------------------------------------------
+The suggested career for you is Data Analyst
 
-explanation(dataScientist) :- write('----------------------------------------------------- \n
-The suggested career for you is Data Scientist\n-----------------------------------------------------\n').
+Explanation - A data analyst retrives, cleans organizes data and extract meaningful inferences from it.
+------------------------------------------------------------------------\n').
 
-explanation(full) :- write('----------------------------------------------------- \n
-The suggested career for you is Full Stack Developer\n-----------------------------------------------------\n').
+explanation(big_data_eng) :- write('------------------------------------------------------------------------
+The suggested career for you is Big Data Engineer.
 
-explanation(sde) :- write('----------------------------------------------------- \n
-The suggested career for you is Software Developer\n-----------------------------------------------------\n').
+Explanation - A big data engineer develop, maintains and test big data solutions. They should be able to work with latest database technologies.
+------------------------------------------------------------------------\n').
 
-explanation(blockchain) :- write('----------------------------------------------------- \n
-The suggested career for you is Blockchain Developer\n-----------------------------------------------------\n').
+explanation(dataScientist) :- write('------------------------------------------------------------------------
+The suggested career for you is Data Scientist.
+
+Explanation - A data scientist cleans and process data. Further they create models to extract patterns from data and predict future points.
+------------------------------------------------------------------------\n').
+
+explanation(full) :- write('------------------------------------------------------------------------
+The suggested career for you is Full Stack Developer.
+
+Explanation - A full stack developer can develop both client and server level softwares. They can work over web as well as mobile applications.
+------------------------------------------------------------------------\n').
+
+explanation(sde) :- write('------------------------------------------------------------------------
+The suggested career for you is Software Developer.
+
+Explanation - A person who creates software and are expert in programming languages. They are expected to write bug free functionalities for software.
+------------------------------------------------------------------------\n').
+
+explanation(blockchain) :- write('------------------------------------------------------------------------
+The suggested career for you is Blockchain Developer.
+
+Explanation - A developer involved in development of blockchain technology are blockchain developers. They should be well versed with system security concepts.
+------------------------------------------------------------------------\n').
 
 /*-----------------------------------------------( made by - Aarushi Agarwal (2016216)) ------------------------------------------------------------*/
